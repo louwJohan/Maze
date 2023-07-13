@@ -45,7 +45,7 @@ class SVGRenderer:
     def _get_body(self, maze: Maze, solution: Solution | None) -> str:
         return "".join([
             arrow_marker(),
-            backgrouns(),
+            background(),
             *map(self._draw_square, maze),
             self._draw_solution(solution) if solution else "",
         ])
