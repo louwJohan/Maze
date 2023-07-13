@@ -1,8 +1,15 @@
+from dataclasses import dataclass
 from typing import NamedTuple, Protocol
 
 class Primitive(Protocol):
     def draw(self, **attributes) -> str:
         ...
+
+
+class NullPrimitive(Protocol):
+    def draw(self, **attributes)-> str:
+        return ""
+    
 
 class Point(NamedTuple):
     x: int
@@ -13,6 +20,7 @@ class Point(NamedTuple):
     
     def translate(self, x=0, y=0) -> "Point":
         return Point(self.x + x, self.y + y)
+
 
 class Line(NamedTuple):
     start: Point
@@ -25,6 +33,50 @@ class Line(NamedTuple):
             y1=self.start.y,
             x2=self.end.x,
             y2=self.end.y,
+            **attributes
+        )
+
+
+class Polyline(tuple[Point, ...]):
+    def draw(self, **attributes) -> str:
+        points = " ".join(point.draw() for point in self)
+        return tag("polyline", points=points, **attributes)
+    
+
+class Polygon(tuple[Point, ...]):
+    def draw(self, **attributes) -> str:
+        points = " ".join(point.draw() for point in self)
+        return tag("polygon", points=points, **attributes)
+    
+
+class DisjointLines(tuple[Line, ...]):
+    def draw(self, **attributes) -> str:
+        return "".join(line.draw(**attributes) for line in self)
+
+
+@dataclass(frozen=True)
+class Rect:
+    top_left: Point | None=None
+
+    def draw(self, **attributes) -> str:
+        if self.top_left:
+            attrs = attributes | {"x": self.top_left.x, "y": self.top_left.y}
+        else:
+            attrs = attributes
+        return tag("rect", **attrs)
+    
+    
+@dataclass(frozen=True)
+class Text:
+    content: str
+    point: Point
+
+    def draw(self, **attributes) -> str:
+        return tag(
+            "text",
+            self.content,
+            x=self.point.x,
+            y=self.point.y,
             **attributes
         )
 
