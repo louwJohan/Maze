@@ -40,7 +40,7 @@ def make_graph(maze: Maze) -> nx.DiGraph:
         for edge in get_directed_edges(maze, get_nodes(maze))
     )
 
-def _get_directed_edges(maze: Maze, nodes: set[Node]) -> set[Edge]:
+def get_directed_edges(maze: Maze, nodes: set[Node]) -> set[Edge]:
     return(edges := get_edges(maze, nodes)) | {edge.flip for edge in edges}
 
 def get_nodes(maze: Maze) -> set[Node]:
